@@ -1,0 +1,10 @@
+# General properties
+#binance:
+#server.host: 0.0.0.0
+rate: 15000
+exchange: org.knowm.xchange.binance.BinanceExchange
+symbols:
+        - ETH/BTC
+        - ETH/ZEC
+
+# Spring Boot
