@@ -9,6 +9,6 @@ symbols:
         - XRP/BTC
         - LTC/ETH
         - BTG/ETH
-        - ZEC/BTC
+        - BTG/BTC
 
 # Spring Boot
