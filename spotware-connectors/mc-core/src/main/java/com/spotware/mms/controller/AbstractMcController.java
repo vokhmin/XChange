@@ -1,7 +1,10 @@
 package com.spotware.mms.controller;
 
+import com.spotware.mms.MarketDataSnapshot;
+import com.spotware.mms.MarketDataSource;
+import com.spotware.mms.SymbolAggSnapshot;
+import com.spotware.mms.SymbolSnapshot;
 import javax.servlet.http.HttpServletRequest;
-
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.spotware.mms.MarketDataSnapshot;
-import com.spotware.mms.MarketDataSource;
-import com.spotware.mms.SymbolAggSnapshot;
-import com.spotware.mms.SymbolSnapshot;
-
 import reactor.core.publisher.Mono;
 
 public abstract class AbstractMcController {

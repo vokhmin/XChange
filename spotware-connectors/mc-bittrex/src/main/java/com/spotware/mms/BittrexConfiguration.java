@@ -17,7 +17,7 @@ public class BittrexConfiguration {
     final Exchange exchange =
         ExchangeFactory.INSTANCE.createExchange(BittrexExchange.class.getName());
     final MarketDataService marketDataService = exchange.getMarketDataService();
-    final MarketDataSource source = new MarketDataSource(marketDataService);
+    final MarketDataSource source = new MarketDataSource("Bittrex", marketDataService);
     source.setCurrencyPairs(currencyPairs);
     return source;
   }

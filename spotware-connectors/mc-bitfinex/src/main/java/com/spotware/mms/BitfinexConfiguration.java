@@ -17,7 +17,7 @@ public class BitfinexConfiguration {
     final Exchange exchange =
         ExchangeFactory.INSTANCE.createExchange(BitfinexExchange.class.getName());
     final MarketDataService marketDataService = exchange.getMarketDataService();
-    final MarketDataSource source = new MarketDataSource(marketDataService);
+    final MarketDataSource source = new MarketDataSource("Bitfinex", marketDataService);
     source.setCurrencyPairs(currencyPairs);
     return source;
   }

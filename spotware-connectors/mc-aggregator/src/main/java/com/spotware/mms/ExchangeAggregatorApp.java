@@ -1,8 +1,8 @@
 package com.spotware.mms;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +26,9 @@ public class ExchangeAggregatorApp {
 
   @Bean
   Set<CurrencyPair> currencyPairs() {
-    final HashSet<CurrencyPair> pairs = new HashSet<>();
-    pairs.add(new CurrencyPair(config.getSymbols().get(0)));
-    return pairs;
+    final Set<CurrencyPair> set =
+        config.getSymbols().stream().map(it -> new CurrencyPair(it)).collect(Collectors.toSet());
+    return set;
   }
 
   @Bean

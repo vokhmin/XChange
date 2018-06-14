@@ -5,6 +5,10 @@ rate: 15000
 exchange: org.knowm.xchange.binance.BinanceExchange
 symbols:
         - ETH/BTC
-        - ETH/ZEC
+        - LTC/BTC
+        - XRP/BTC
+        - LTC/ETH
+        - BTG/ETH
+        - ZEC/BTC
 
 # Spring Boot
