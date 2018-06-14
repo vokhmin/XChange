@@ -2,7 +2,6 @@ package com.spotware.mms;
 
 import static java.util.Collections.unmodifiableMap;
 
-import java.io.IOException;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -39,7 +38,7 @@ public class MarketDataSource {
             try {
                 tickers.put(pair, marketDataService.getTicker(pair));
                 trades.put(pair, marketDataService.getTrades(pair));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.error("Couldn't read MarketData for symbol:{} from {}", pair, market);
                 tickers.remove(pair);
                 trades.remove(pair);
