@@ -7,8 +7,6 @@ symbols:
         - ETH/BTC
         - LTC/BTC
         - XRP/BTC
-        - LTC/ETH
-        - BTG/ETH
-        - ZEC/BTC
+        - BTG/BTC
 
 # Spring Boot
