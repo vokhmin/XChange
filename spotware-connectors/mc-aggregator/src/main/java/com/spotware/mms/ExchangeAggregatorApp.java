@@ -18,7 +18,12 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @SpringBootApplication(excludeName = "AbstractMcController")
 @EnableScheduling
-@Import({BinanceConfiguration.class, BitfinexConfiguration.class, BittrexConfiguration.class})
+@Import({
+  MarketsConfiguration.class,
+  //        BinanceConfiguration.class,
+  //        BitfinexConfiguration.class,
+  BittrexConfiguration.class
+})
 public class ExchangeAggregatorApp {
   private static Logger LOGGER = LoggerFactory.getLogger(BinanceConnectorApp.class);
 
@@ -31,6 +36,8 @@ public class ExchangeAggregatorApp {
     return set;
   }
 
+  @Autowired Set<MarketDataSource> sources;
+
   @Bean
   MarketDataTasks tasks(List<MarketDataSource> sources) {
     return new MarketDataTasks(sources);
@@ -39,8 +46,8 @@ public class ExchangeAggregatorApp {
   @Bean
   public TaskExecutor threadPoolTaskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(4);
-    executor.setMaxPoolSize(4);
+    executor.setCorePoolSize(sources.size());
+    executor.setMaxPoolSize(sources.size());
     executor.setThreadNamePrefix("exec");
     executor.initialize();
     return executor;

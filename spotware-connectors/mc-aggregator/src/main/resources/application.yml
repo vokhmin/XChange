@@ -1,7 +1,7 @@
 # General properties
 #binance:
 #server.host: 0.0.0.0
-rate: 15000
+rate: 20000
 exchange: org.knowm.xchange.binance.BinanceExchange
 symbols:
         - ETH/BTC
