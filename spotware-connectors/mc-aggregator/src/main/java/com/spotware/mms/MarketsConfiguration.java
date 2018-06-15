@@ -15,11 +15,11 @@ import org.springframework.context.annotation.Configuration;
 public class MarketsConfiguration {
 
   @Bean
-  MarketDataSource poloneixMarketDataSource(Set<CurrencyPair> currencyPairs) {
+  MarketDataSource poloniexMarketDataSource(Set<CurrencyPair> currencyPairs) {
     final Exchange exchange =
         ExchangeFactory.INSTANCE.createExchange(PoloniexExchange.class.getName());
     final MarketDataService marketDataService = exchange.getMarketDataService();
-    final MarketDataSource source = new MarketDataSource("Poloneix", marketDataService);
+    final MarketDataSource source = new MarketDataSource("Poloniex", marketDataService);
     source.setCurrencyPairs(currencyPairs);
     return source;
   }

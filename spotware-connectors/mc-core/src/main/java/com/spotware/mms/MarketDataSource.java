@@ -1,5 +1,6 @@
 package com.spotware.mms;
 
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.unmodifiableMap;
 
 import java.time.ZoneOffset;
@@ -9,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.dto.marketdata.Trades;
@@ -17,58 +19,60 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MarketDataSource {
-  private static final Logger LOGGER = LoggerFactory.getLogger(MarketDataSource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MarketDataSource.class);
 
-  private final String market;
-  private final MarketDataService marketDataService;
+    private static final Ticker EMPTY_TRADE = new Ticker.Builder().build();
 
-  private Set<CurrencyPair> currencyPairs = new ConcurrentSkipListSet<>();
-  private volatile MarketDataSnapshot snapshot;
+    public final String market;
+    private final MarketDataService marketDataService;
 
-  public MarketDataSource(String market, MarketDataService service) {
-    this.market = market;
-    marketDataService = service;
-  }
+    private Set<CurrencyPair> currencyPairs = new ConcurrentSkipListSet<>();
+    private volatile MarketDataSnapshot snapshot;
 
-  public MarketDataSnapshot read(final Set<CurrencyPair> currencyPairs) {
-    final Map<CurrencyPair, Ticker> tickers = new HashMap<>();
-    final Map<CurrencyPair, Trades> trades = new HashMap<>();
-    for (CurrencyPair pair : currencyPairs) {
-      try {
-        tickers.put(pair, marketDataService.getTicker(pair));
-        trades.put(pair, marketDataService.getTrades(pair));
-      } catch (Exception e) {
-        LOGGER.error("Couldn't read MarketData for symbol:{} from {}", pair, market);
-        tickers.remove(pair);
-        trades.remove(pair);
-      }
+    public MarketDataSource(String market, MarketDataService service) {
+        this.market = market;
+        marketDataService = service;
     }
-    return MarketDataSnapshot.builder()
-        .utcDateTime(ZonedDateTime.now(ZoneOffset.UTC))
-        .tickers(unmodifiableMap(tickers))
-        .trades(unmodifiableMap(trades))
-        .build();
-  }
 
-  public void refreshMarektData() {
-    LOGGER.info("Try to read data from a market");
-    try {
-      snapshot = this.read(currencyPairs);
-      LOGGER.info("MarketData was read: \n{}", snapshot);
-    } catch (Exception e) {
-      LOGGER.error("Couldn't read data from a market", e);
+    public MarketDataSnapshot read(final Set<CurrencyPair> currencyPairs) {
+        final Map<CurrencyPair, Ticker> tickers = new HashMap<>();
+        final Map<CurrencyPair, Trades> trades = new HashMap<>();
+        for (CurrencyPair pair : currencyPairs) {
+            try {
+                tickers.put(pair, marketDataService.getTicker(pair));
+                trades.put(pair, marketDataService.getTrades(pair));
+            } catch (Exception e) {
+                LOGGER.error("Couldn't read MarketData for symbol:{} from {}", pair, market);
+                tickers.remove(pair, EMPTY_TRADE);
+                trades.put(pair, new Trades(EMPTY_LIST));
+            }
+        }
+        return MarketDataSnapshot.builder()
+                .utcDateTime(ZonedDateTime.now(ZoneOffset.UTC))
+                .tickers(unmodifiableMap(tickers))
+                .trades(unmodifiableMap(trades))
+                .build();
     }
-  }
 
-  public Set<CurrencyPair> getCurrencyPairs() {
-    return new HashSet<>(currencyPairs);
-  }
+    public void refreshMarektData() {
+        LOGGER.info("Try to read data from a market");
+        try {
+            snapshot = this.read(currencyPairs);
+            LOGGER.info("MarketData was read: \n{}", snapshot);
+        } catch (Exception e) {
+            LOGGER.error("Couldn't read data from a market", e);
+        }
+    }
 
-  public void setCurrencyPairs(Set<CurrencyPair> currencyPairs) {
-    this.currencyPairs.addAll(currencyPairs);
-  }
+    public Set<CurrencyPair> getCurrencyPairs() {
+        return new HashSet<>(currencyPairs);
+    }
 
-  public MarketDataSnapshot getSnapshot() {
-    return snapshot;
-  }
+    public void setCurrencyPairs(Set<CurrencyPair> currencyPairs) {
+        this.currencyPairs.addAll(currencyPairs);
+    }
+
+    public MarketDataSnapshot getSnapshot() {
+        return snapshot;
+    }
 }
