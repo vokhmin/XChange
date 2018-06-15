@@ -3,6 +3,7 @@ package com.spotware.mms;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.knowm.xchange.currency.CurrencyPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,67 +17,67 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-@SpringBootApplication(excludeName = "AbstractMcController")
+@SpringBootApplication(excludeName = {"AbstractMcController", "BinanceConnectorApp"})
 @EnableScheduling
 @Import({
-  MarketsConfiguration.class,
-  //        BinanceConfiguration.class,
-  //        BitfinexConfiguration.class,
-  BittrexConfiguration.class
+        MarketsConfiguration.class,
+        BinanceConfiguration.class,
+        BitfinexConfiguration.class,
+        BittrexConfiguration.class
 })
 public class ExchangeAggregatorApp {
-  private static Logger LOGGER = LoggerFactory.getLogger(BinanceConnectorApp.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(BinanceConnectorApp.class);
 
-  @Autowired private ConnectorConfig config;
+    @Autowired private ConnectorConfig config;
 
-  @Bean
-  Set<CurrencyPair> currencyPairs() {
-    final Set<CurrencyPair> set =
-        config.getSymbols().stream().map(it -> new CurrencyPair(it)).collect(Collectors.toSet());
-    return set;
-  }
+    @Bean
+    Set<CurrencyPair> currencyPairs() {
+        final Set<CurrencyPair> set =
+                config.getSymbols().stream().map(it -> new CurrencyPair(it)).collect(Collectors.toSet());
+        return set;
+    }
 
-  @Autowired Set<MarketDataSource> sources;
+    @Autowired Set<MarketDataSource> sources;
 
-  @Bean
-  MarketDataTasks tasks(List<MarketDataSource> sources) {
-    return new MarketDataTasks(sources);
-  }
+    @Bean
+    MarketDataTasks tasks(List<MarketDataSource> sources) {
+        return new MarketDataTasks(sources);
+    }
 
-  @Bean
-  public TaskExecutor threadPoolTaskExecutor() {
-    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(sources.size());
-    executor.setMaxPoolSize(sources.size());
-    executor.setThreadNamePrefix("exec");
-    executor.initialize();
-    return executor;
-  }
+    @Bean
+    public TaskExecutor threadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(sources.size());
+        executor.setMaxPoolSize(sources.size());
+        executor.setThreadNamePrefix("exec");
+        executor.initialize();
+        return executor;
+    }
 
-  public static void main(String[] args) {
-    long startMillis = System.currentTimeMillis();
-    String label = getComponentName();
-    String version = getComponentVersion();
+    public static void main(String[] args) {
+        long startMillis = System.currentTimeMillis();
+        String label = getComponentName();
+        String version = getComponentVersion();
 
-    LOGGER.info("| SERVER_STARTING | Starting {} Version {}...", label, version);
+        LOGGER.info("| SERVER_STARTING | Starting {} Version {}...", label, version);
 
-    SpringApplication app = new SpringApplication(ExchangeAggregatorApp.class);
-    app.setLogStartupInfo(false);
-    app.addListeners(new ApplicationPidFileWriter());
-    app.run(args);
+        SpringApplication app = new SpringApplication(ExchangeAggregatorApp.class);
+        app.setLogStartupInfo(false);
+        app.addListeners(new ApplicationPidFileWriter());
+        app.run(args);
 
-    LOGGER.info(
-        "| SERVER_STARTED | {} is started in {} seconds.",
-        label,
-        ((System.currentTimeMillis() - startMillis) / 1000));
-  }
+        LOGGER.info(
+                "| SERVER_STARTED | {} is started in {} seconds.",
+                label,
+                ((System.currentTimeMillis() - startMillis) / 1000));
+    }
 
-  public static String getComponentName() {
-    return "Binance Market Connector";
-  }
+    public static String getComponentName() {
+        return "Binance Market Connector";
+    }
 
-  public static String getComponentVersion() {
-    //        ManifestUtils.getComponentVersion()
-    return "0.1";
-  }
+    public static String getComponentVersion() {
+        //        ManifestUtils.getComponentVersion()
+        return "0.1";
+    }
 }
